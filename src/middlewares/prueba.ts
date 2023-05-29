@@ -15,8 +15,10 @@ class AccountAuthMiddleware {
     }
 
     public async verifyToken(req: Request, res: Response, next: NextFunction) {
+        let token; // Variable para almacenar el token
+
         if (req.headers.authorization) {
-            const token = req.headers.authorization.replace('Bearer ', '');
+            token = req.headers.authorization.replace('Bearer ', '');
             try {
                 // Verificar y decodificar el token
                 const decodedToken: any = jwt.verify(token, 'YOUR_SECRET_KEY');
@@ -39,7 +41,12 @@ class AccountAuthMiddleware {
         } else {
             res.status(401).send({ code: 'NoTokenFound', message: 'The token is not present in the request' });
         }
+
+        // Utiliza la variable "token" donde lo necesites dentro del middleware
+        // Por ejemplo, puedes imprimirlo en la consola:
+        console.log('Token:', token);
     }
 }
 
 export default AccountAuthMiddleware;
+
