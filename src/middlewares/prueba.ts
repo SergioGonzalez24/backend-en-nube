@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AccountModel } from '../models';
+import cuenta from '../models';
 
 class AccountAuthMiddleware {
     // Singleton
@@ -16,6 +16,7 @@ class AccountAuthMiddleware {
 
     public async verifyToken(req: Request, res: Response, next: NextFunction) {
         let token; // Variable para almacenar el token
+        let clientId; // Variable para almacenar el ID del cliente
 
         if (req.headers.authorization) {
             token = req.headers.authorization.replace('Bearer ', '');
@@ -26,14 +27,21 @@ class AccountAuthMiddleware {
                 // Obtener el ID de cuenta desde el token decodificado
                 const accountId = decodedToken.accountId;
 
+                // Obtener el ID del cliente desde el token decodificado (si está presente)
+                clientId = decodedToken.clientId;
+
                 // Verificar si la cuenta existe en la base de datos
-                const account = await AccountModel.findById(accountId);
+                const account = await cuenta.findById(accountId);
                 if (!account) {
                     return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
                 }
 
                 // Asignar el usuario autenticado al objeto "req.user"
                 req.user = account;
+
+                // Asignar el ID del cliente al objeto "req.clientId" (opcional)
+                req.clientId = clientId;
+
                 next();
             } catch (error) {
                 return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
@@ -42,11 +50,11 @@ class AccountAuthMiddleware {
             res.status(401).send({ code: 'NoTokenFound', message: 'The token is not present in the request' });
         }
 
-        // Utiliza la variable "token" donde lo necesites dentro del middleware
-        // Por ejemplo, puedes imprimirlo en la consola:
+        // Utiliza la variable "token" y "clientId" donde los necesites dentro del middleware
+        // Por ejemplo, puedes imprimirlos en la consola:
         console.log('Token:', token);
+        console.log('Client ID:', clientId);
     }
 }
 
 export default AccountAuthMiddleware;
-
