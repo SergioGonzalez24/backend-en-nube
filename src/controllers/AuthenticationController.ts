@@ -1,7 +1,6 @@
 import { Request,Response } from "express";
 import { checkSchema } from "express-validator";
 import AbstractController from "./AbstractController";
-import UserModel from '../modelsNOSQL/userNOSQL';
 import db from '../models';
 
 class AuthenticationController extends AbstractController{
@@ -16,7 +15,7 @@ class AuthenticationController extends AbstractController{
         if(this.instance){
             return this.instance;
         }
-        this.instance = new AuthenticationController('auth');
+        this.instance = new AuthenticationController('cliente');
         return this.instance;
     }
 
@@ -24,11 +23,6 @@ class AuthenticationController extends AbstractController{
         this.router.post('/signup', this.signup.bind(this));
         this.router.post('/verify',this.verify.bind(this));
         this.router.post('/signin',this.signin.bind(this));
-        this.router.get('/test',this.authMiddleware.verifyToken,this.test.bind(this));
-    }
-
-    private async test(req:Request,res:Response){
-        res.status(200).send("Esto es una prueba");
     }
 
     private async signin(req:Request,res:Response){
@@ -64,17 +58,6 @@ class AuthenticationController extends AbstractController{
                     Value: email
                 }
             ])
-            //Guardar el usuario en DB NoSQL (DynamoDB)
-            await UserModel.create(
-                {
-                    awsCognitoId:user.UserSub,
-                    name,
-                    role,
-                    email
-                },
-                {overwrite:false}
-            )
-            console.log('Usuario guardado en BDNoSQL')
             //Guard el usuario en DB relacional (MySQL)
             await db['User'].create(
                 {
