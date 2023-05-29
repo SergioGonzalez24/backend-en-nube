@@ -1,7 +1,6 @@
 import Server from "./providers/Server";
 import express from "express";
 import cors from 'cors';
-import UserController from "./controllers/UserController";
 import AuthenticationController from "./controllers/AuthenticationController";
 
 const app = new Server({
@@ -12,7 +11,6 @@ const app = new Server({
         cors()
     ],
     controllers:[
-        UserController.getInstance(),
         AuthenticationController.getInstance()
     ],
     env:'development'

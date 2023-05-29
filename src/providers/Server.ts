@@ -36,7 +36,7 @@ class Server{
     public async init(){
         await this.connectDB();
         this.app.listen(this.port,()=>{
-            console.log(`Server::Running 🚀 😱 @'http://localhost:${this.port}'`);
+            console.log(`Server::Running 🚀 @'http://localhost:${this.port}'`);
         })
     }
 
