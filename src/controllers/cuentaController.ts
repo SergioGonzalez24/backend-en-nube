@@ -17,43 +17,57 @@ class CuentaController extends AbstractController {
   }
 
   protected initRoutes(): void {
-    this.router.post("/deposito", this.deposito.bind(this));
-    this.router.post("/retiro", this.retiro.bind(this));
-    this.router.get("/saldo", this.saldo.bind(this));
+    this.router.post("/deposito",this.authMiddleware.verifyToken, this.deposito.bind(this));
+    this.router.post("/retiro",this.authMiddleware.verifyToken, this.retiro.bind(this));
+    this.router.get('/saldo',this.authMiddleware.verifyToken, this.saldo.bind(this));
   }
 
   private async deposito(req: Request, res: Response) {
-    // Obtener el monto del depósito desde el cuerpo de la solicitud
-    const { monto } = req.body;
-
     try {
-      // Lógica para realizar el depósito en la cuenta
-      
-      // Si el depósito fue exitoso, devolver un mensaje de éxito
-      res.status(200).json({ message: "Depósito realizado exitosamente" });
-    } catch (error: any) {
-      res
-        .status(500)
-        .json({ code: error.code, message: error.message })
-        .end();
-    }
+      const {email, cantidad} = req.body;
+      const saldo = await db['Cuenta'].findAll({
+        where: {
+          email: email
+        }
+      });
+        const saldo_actual = saldo[0].balance;
+        await db['Cuenta'].update({balance: saldo_actual + cantidad}, {
+            where: {
+                email: email
+            }
+        });
+        res.status(200).send(`se actualizo el saldo`);
+      }
+      catch (error: any) {
+        res
+          .status(500)
+          .json({ code: error.code, message: error.message })
+          .end();
+      }
   }
 
-  private async retiro(req: Request, res: Response) {
-    // Obtener el monto del retiro desde el cuerpo de la solicitud
-    const { monto } = req.body;
 
+  private async retiro(req: Request, res: Response) {
     try {
-      // Lógica para realizar el retiro de la cuenta y verificar si hay saldo suficiente
-      
-      // Verificar si hay saldo suficiente en la cuenta
-      if (saldoSuficiente) {
-        // Si hay saldo suficiente, realizar el retiro y devolver un mensaje de éxito
-        res.status(200).json({ message: "Retiro realizado exitosamente" });
-      } else {
-        // Si no hay saldo suficiente, devolver un mensaje de error
-        res.status(400).json({ message: "No hay saldo suficiente" });
+      const {email, cantidad} = req.body;
+      const saldo = await db['Cuenta'].findAll({
+        where: {
+          email: email
+        }
+      });
+      if (saldo[0].balance < cantidad){
+        res.status(500).send(`Saldo insuficiente`);
+      } else{
+        const saldo_actual = saldo[0].balance;
+        await db['Cuenta'].update({balance: saldo_actual - cantidad}, {
+            where: {
+                email: email
+            }
+        });
       }
+      
+      // Devolver el saldo actual de la cuenta
+      res.status(200).send(`se actualizo el saldo`);
     } catch (error: any) {
       res
         .status(500)
@@ -65,9 +79,15 @@ class CuentaController extends AbstractController {
   private async saldo(req: Request, res: Response) {
     try {
       // Lógica para consultar el saldo de la cuenta
-
+      const {email} = req.body;
+      const saldo = await db['Cuenta'].findAll({
+        where: {
+          email: email
+        }
+      });
+      console.log(saldo);
       // Devolver el saldo actual de la cuenta
-      res.status(200).json({ saldo: saldoActual });
+      res.status(200).send(`saldo: ${saldo[0].balance}`);
     } catch (error: any) {
       res
         .status(500)

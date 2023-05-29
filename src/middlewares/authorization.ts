@@ -33,6 +33,7 @@ class AuthMiddleware {
 			const kid = decodedJWT.header.kid;
 			if(kid !== undefined){
 				if (Object.keys(pems).includes(kid)) {
+					console.log(decodedJWT.payload.username)
 					console.log("Verificado")
 					//return res.status(401).end();
 				}

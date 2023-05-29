@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AccountModel } from '../models';
+import cuenta from '../models';
 
 class AccountAuthMiddleware {
     // Singleton
@@ -27,7 +27,7 @@ class AccountAuthMiddleware {
                 const accountId = decodedToken.accountId;
 
                 // Verificar si la cuenta existe en la base de datos
-                const account = await AccountModel.findById(accountId);
+                const account = await cuenta.findById(accountId);
                 if (!account) {
                     return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
                 }
