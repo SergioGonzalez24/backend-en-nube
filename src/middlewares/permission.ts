@@ -50,4 +50,19 @@ export default class PermissionMiddleware {
 				res.status(500).send({ code: error.code, message: error.message });
 			}
 		}
+
+		public async checkIsAgente(req: Request, res: Response, next: NextFunction): Promise<void> {
+			try {
+				const user = await UserModel.get(req.user, '', {
+					AttributesToGet: ['role'],
+				});
+				if (user.attrs.role === UserRoles.AGENT) {
+					next();
+				} else {
+					res.status(401).send({ code: 'UserNotAdminException', message: 'The logged account is not an agent' });
+				}
+			} catch (error:any) {
+				res.status(500).send({ code: error.code, message: error.message });
+			}
+		}
 }

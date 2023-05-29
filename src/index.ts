@@ -3,6 +3,7 @@ import express from "express";
 import cors from 'cors';
 import AuthenticationController from "./controllers/AuthenticationController";
 import CuentaController from "./controllers/cuentaController";
+import AgenteController from "./controllers/agenteController";
 
 
 const app = new Server({
@@ -14,7 +15,8 @@ const app = new Server({
     ],
     controllers:[
         AuthenticationController.getInstance(),
-        CuentaController.getInstance()
+        CuentaController.getInstance(),
+        AgenteController.getInstance()
     ],
     env:'development'
 });
