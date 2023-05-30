@@ -64,10 +64,11 @@ class CuentaController extends AbstractController {
                 email: email
             }
         });
+        res.status(200).send(`se actualizo el saldo`);
       }
       
       // Devolver el saldo actual de la cuenta
-      res.status(200).send(`se actualizo el saldo`);
+      
     } catch (error: any) {
       res
         .status(500)

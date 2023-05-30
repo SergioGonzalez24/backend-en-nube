@@ -55,7 +55,7 @@ class AgenteController extends AbstractController {
 
       // Devolver el saldo actual de la cuenta
       if (cuentas.length == 0) {
-        res.status(500).send(`No hay cuentas en ese rango`);
+        throw new Error("No hay cuentas");
       } else {
         res.status(200).send(cuentas);
       }
