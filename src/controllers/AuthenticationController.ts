@@ -81,13 +81,17 @@ class AuthenticationController extends AbstractController{
                 }
             )
             console.log("Usuario de cognito creado",user);
-            await db['Cuenta'].create(
-                {
-                    email,
-                    balance:0
-                }
-            )
-            console.log("Cuenta Creada en MySQL",user);
+            if (role === 'CUSTOMER'){
+
+                await db['Cuenta'].create(
+                    {
+                        email,
+                        balance:0
+                    }
+                )
+                console.log("Cuenta Creada en MySQL",user);
+            }
+            
             res.status(201).send({message:"User signedUp"})
         }catch(error:any){
             res.status(500).send({code:error.code,message:error.message}).end()
