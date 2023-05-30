@@ -56,7 +56,7 @@ class CuentaController extends AbstractController {
         }
       });
       if (saldo[0].balance < cantidad){
-        res.status(500).send(`Saldo insuficiente`);
+        throw new Error("No hay saldo suficiente");
       } else{
         const saldo_actual = saldo[0].balance;
         await db['Cuenta'].update({balance: saldo_actual - cantidad}, {
